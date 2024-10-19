@@ -3,16 +3,13 @@ import { AppModule } from './app.module';
 import { ConfigModule } from '@nestjs/config';
 
 async function bootstrap() {
-  // Initialize ConfigModule to load the .env file
   ConfigModule.forRoot();
-
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
-
-  // Console log the message from .env
-  // const message = process.env.MESSAGE || 'No message found';
-  // console.log(message);
-
+  app.enableCors({
+    origin: 'http://localhost:3000', 
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, 
+  });
   await app.listen(5000);
 }
 
