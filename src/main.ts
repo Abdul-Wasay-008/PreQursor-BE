@@ -10,7 +10,7 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, 
   });
-  await app.listen(5000);
+  await app.listen(5000, '0.0.0.0');
 }
 
 bootstrap();
