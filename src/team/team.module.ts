@@ -12,5 +12,6 @@ import { AuthModule } from 'src/auth/auth.module';
   ],
   controllers: [TeamsController],
   providers: [TeamService],
+  exports: [MongooseModule],
 })
-export class TeamsModule {}
+export class TeamsModule { }
