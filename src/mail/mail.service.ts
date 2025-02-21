@@ -6,8 +6,8 @@ export class MailService {
   // Method for sending contact form emails
   async sendMail(formData: { name: string; email: string; message: string }) {
     const mailOptions = {
-      from: process.env.GMAIL_USER,               // Your PQ email
-      to: process.env.GMAIL_USER,                // Also your PQ email
+      from: process.env.GMAIL_USER,              // PQ email
+      to: process.env.GMAIL_USER,                // PQ email
       replyTo: formData.email,                   // Sender's email (used for replies)
       subject: `Message from ${formData.name}`,  // Username
       text: formData.message,                    // Message
@@ -22,7 +22,7 @@ export class MailService {
     }
   }
 
-  // New method for sending match confirmation emails
+  // Function for sending match confirmation emails
   async sendMatchConfirmationEmail(to: string[], matchDetails: any) {
     const emailSubject = `Match Confirmation for Match ID: ${matchDetails.matchId}`;
     const formattedPrizePool = matchDetails.prizePool
@@ -98,35 +98,42 @@ export class MailService {
   <div class="container">
     <h3>Match Confirmation</h3>
     <div class="email-content">
-      <p>Congratulations! You've successfully booked a match!</p>
-      <ul class="details-list">
-        <li><strong>Match ID:</strong> ${matchDetails.matchId}</li>
-        <li><strong>Game ID:</strong> ${matchDetails.gameId}</li>
-        <li><strong>Game Name:</strong> ${matchDetails.gameName}</li>
-        <li><strong>Map:</strong> ${matchDetails.map}</li>
-        <li><strong>Battle Type:</strong> ${matchDetails.battleType}</li>
-        <li><strong>Prize Pool:</strong>
-          <ul class="prize-pool">
-            ${formattedPrizePool}
-          </ul>
-        </li>
-        <li><strong>Date and Time:</strong> ${matchDetails.dateTime}</li>
+    <p>Congratulations! You've successfully booked a match!</p>
+    <ul class="details-list">
+    <li><strong>Match ID:</strong> ${matchDetails.matchId}</li>
+    <li><strong>Game ID:</strong> ${matchDetails.gameId}</li>
+    <li><strong>Game Name:</strong> ${matchDetails.gameName}</li>
+    <li><strong>Map:</strong> ${matchDetails.map}</li>
+    <li><strong>Battle Type:</strong> ${matchDetails.battleType}</li>
+    <li><strong>Game Server:</strong> ${matchDetails.server}</li>
+    <li><strong>Prize Pool:</strong>
+      <ul class="prize-pool">
+        ${formattedPrizePool}
       </ul>
-      <p>Good luck, and may the best player win!</p>
-      <p>Thank you for choosing PreQursor. We are thrilled to have you as part of our vibrant gaming community!</p>
-      <p class="highlight"><strong>Make sure to save this email for future reference.</strong></p>
-    </div>
-    <div class="footer">
-      <p>Best regards, <br>The PreQursor Team</p>
-    </div>
-  </div>
+    </li>
+    <li><strong>Date and Time:</strong> ${matchDetails.dateTime}</li>
+    <li><strong>Room Name:</strong> ${matchDetails.roomName}</li> 
+    <li><strong>Room Password:</strong> ${matchDetails.roomPassword}</li> 
+  </ul>
+
+  <p><strong>Confidential:</strong> Please do not share this email, including the room name and password, with anyone. This information is for your use only to ensure a secure and fair match.</p>
+
+  <p>Good luck, and may the best player win!</p>
+  <p>Thank you for choosing PreQursor. We are thrilled to have you as part of our vibrant gaming community!</p>
+  <p class="highlight"><strong>Make sure to save this email for future reference.</strong></p>
+</div>
+
+<div class="footer">
+  <p>Best regards, <br>The PreQursor Team</p>
+</div>
+
 </body>
 </html>
 
   `;
 
     const mailOptions = {
-      from: process.env.GMAIL_USER,  // Your PQ email
+      from: process.env.GMAIL_USER,  // PQ email
       to: to.join(','),              // Send to multiple recipients (players)
       subject: emailSubject,
       html: emailText,

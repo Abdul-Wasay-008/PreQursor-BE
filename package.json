@@ -31,6 +31,7 @@
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "google-auth-library": "^9.14.2",
     "jsonwebtoken": "^9.0.2",
@@ -40,7 +41,8 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "strong-soap": "^4.1.8"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

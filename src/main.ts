@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   // Load environment variables
@@ -10,9 +11,16 @@ async function bootstrap() {
   // Create the application instance
   const app = await NestFactory.create(AppModule);
 
+  // ✅ Parse JSON bodies
+  app.use(bodyParser.json());
+
+  // ✅ Parse URL-encoded bodies (needed for Easypaisa)
+  app.use(bodyParser.urlencoded({ extended: true }));
+
   // Enable CORS for frontend communication
   app.enableCors({
-    origin: 'http://localhost:3000',
+    // origin: 'http://localhost:3000',
+    origin: '*',  // Allow all origins (use this only during development)
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

@@ -31,6 +31,7 @@ export class MatchController {
         return this.matchService.getMatchDetails(matchId, userId);
     }
 
+    //Endpoint to book a match
     @Post(':matchId/book')
     @UseGuards(JwtGuard)
     async bookMatch(

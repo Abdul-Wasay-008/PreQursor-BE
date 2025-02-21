@@ -13,4 +13,8 @@ export class CreateUserDto {
 
     @IsString()
     username: string;
+
+    @IsString()
+    @Matches(/^\d{4}-\d{7}$/, { message: 'Please enter a valid phone number (e.g., 03XX-XXXXXXX).' })
+    phoneNumber: string; 
 }
