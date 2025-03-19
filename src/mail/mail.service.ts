@@ -61,6 +61,7 @@ export class MailService {
                 padding: 20px;
                 font-size: 1.2em;
                 color: #444;
+                text-align: justify;
               }
               .details-list {
                 list-style-type: none;
@@ -168,6 +169,7 @@ export class MailService {
         .container { max-width: 600px; margin: auto; padding: 20px; background: white; border-radius: 12px; text-align: center; }
         h3 { color: #ff4500; text-align: center; font-size: 2em; }
         .email-content { font-size: 1.2em; padding: 20px; text-align: left; }
+        .justify { text-align: justify; }
         .details { padding: 10px 20px; border-radius: 10px; background: #f8f8f8; }
         .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 0.95em; }
         .cta { background: #ff4500; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; }
@@ -175,10 +177,10 @@ export class MailService {
       </style>
     </head>
     <body>
-      <div class="container">
+      <div class="container justify">
         <img src="cid:pqLogo" class="logo" alt="PreQursor Logo">
         <h3>Deposit Confirmation</h3>
-        <div class="email-content">
+        <div class="email-content justify">
           <p>Dear ${userName},</p>
           <p>Thank you for submitting your deposit request. Our finance team is currently reviewing your transaction. Once the verification process is complete, your wallet will be updated accordingly. If any additional information is required, we will reach out to you via email.</p>
           <p>Thank you for choosing PreQursor!</p>
