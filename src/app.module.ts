@@ -6,6 +6,8 @@ import { MailModule } from './mail/mail.module';
 import { IdModule } from './id/id.module';
 import { TeamsModule } from './team/team.module';
 import { MatchModule } from './match/match.module';
+import { WalletModule } from './wallet/wallet.module';
+import { ScreenshotModule } from './screenshot/screenshot.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
@@ -18,6 +20,8 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     IdModule,
     TeamsModule,
     MatchModule,
+    WalletModule,
+    ScreenshotModule,
   ],
 })
 export class AppModule {}

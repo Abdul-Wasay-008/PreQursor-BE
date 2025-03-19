@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as bodyParser from 'body-parser';
+import * as express from 'express';
+import { join } from 'path';
 
 async function bootstrap() {
   // Load environment variables
@@ -34,8 +36,11 @@ async function bootstrap() {
     }),
   );
 
+  // Serve static files from 'uploads' folder
+  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+
   // Start the server
-  await app.listen(5000, '0.0.0.0');
+  await app.listen(5000);
 }
 
 bootstrap();

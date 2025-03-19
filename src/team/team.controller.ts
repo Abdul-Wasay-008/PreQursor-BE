@@ -46,7 +46,7 @@ export class TeamsController {
     try {
       return await this.teamsService.deleteTeam(teamId, token);
     } catch (error) {
-      throw new BadRequestException('Error deleting team: ' + error.message);
+      throw new BadRequestException(error.message);
     }
   }
 }

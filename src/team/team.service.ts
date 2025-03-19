@@ -23,45 +23,67 @@ export class TeamService {
     }
   }
 
-  // Updated create method to return the team ID and check for duplicate teams
+  // Updated create method to ensure users can only be in one team
   async create(createTeamDto: CreateTeamDto): Promise<{ teamId: string; message: string }> {
     const { teamType, teamLeaderId, playerIds } = createTeamDto;
 
-    // Required team sizes for validation
     const TEAM_SIZES = { duo: 2, squad: 4 };
 
-    // Validate the teamType
     if (!TEAM_SIZES[teamType]) {
       throw new BadRequestException(`Invalid team type: ${teamType}. Please choose 'duo' or 'squad'.`);
     }
 
-    // Check if the total number of players matches the teamType requirement
-    if (playerIds.length + 1 !== TEAM_SIZES[teamType]) { // +1 for the leader
+    if (playerIds.length + 1 !== TEAM_SIZES[teamType]) {
       throw new BadRequestException(
         `Invalid team size: A ${teamType} team requires exactly ${TEAM_SIZES[teamType]} players, but received ${playerIds.length + 1}`
       );
     }
 
-    // Fetch team leader by in-game ID
+    // Fetch leader from the database
     const leader = await this.userModel.findOne({ 'inGameIds.PUBG Mobile': teamLeaderId });
     if (!leader) {
       throw new NotFoundException('PreQursor account for team leader not found');
     }
 
-    // Fetch and verify all players based on in-game IDs
+    // Check if leader is already in a team
+    const leaderExists = await this.teamModel.findOne({
+      $or: [
+        { 'teamLeader.userId': leader._id.toString() },
+        { 'players.userId': leader._id.toString() }
+      ]
+    });
+
+    if (leaderExists) {
+      throw new BadRequestException(`The team leader is already part of another team and cannot create a new one.`);
+    }
+
+    // Fetch and verify all players
     const players = [];
     for (const id of playerIds) {
       const player = await this.userModel.findOne({ 'inGameIds.PUBG Mobile': id });
       if (!player) {
         throw new NotFoundException(`PreQursor account for player with ID ${id} not found`);
       }
+
+      // Check if the player is already in a team
+      const playerExists = await this.teamModel.findOne({
+        $or: [
+          { 'teamLeader.userId': player._id.toString() },
+          { 'players.userId': player._id.toString() }
+        ]
+      });
+
+      if (playerExists) {
+        throw new BadRequestException(`Player with ID ${id} is already a member of another team.`);
+      }
+
       players.push({
         userId: player._id.toString(),
         inGameId: player.inGameIds.get('PUBG Mobile'),
       });
     }
 
-    // Check if a team with the same leader and players already exists
+    // Check if the exact team already exists
     const existingTeam = await this.teamModel.findOne({
       teamType,
       'teamLeader.userId': leader._id.toString(),
@@ -117,7 +139,7 @@ export class TeamService {
 
     // Ensure that the user trying to delete the team is the team leader
     if (team.teamLeader.userId !== userId) {
-      throw new UnauthorizedException('You are not authorized to delete this team');
+      throw new UnauthorizedException(' You are not authorized to delete this team');
     }
 
     // Delete the team from the database
