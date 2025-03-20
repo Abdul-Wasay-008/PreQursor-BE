@@ -21,8 +21,7 @@ async function bootstrap() {
 
   // Enable CORS for frontend communication
   app.enableCors({
-    // origin: 'http://localhost:3000',
-    origin: '*',  // Allow all origins (use this only during development)
+    origin: process.env.FRONTEND_URL,  // Use frontend URL from .env
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -37,10 +36,14 @@ async function bootstrap() {
   );
 
   // Serve static files from 'uploads' folder
-  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+  const uploadPath = process.env.UPLOAD_PATH || join(__dirname, '..', 'uploads');
+  app.use('/uploads', express.static(uploadPath));
 
   // Start the server
-  await app.listen(5000);
+  const PORT = process.env.PORT;
+  await app.listen(PORT, () => {
+    console.log(`✅ Server running on port ${PORT}`);
+  });
 }
 
 bootstrap();
