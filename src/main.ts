@@ -21,14 +21,7 @@ async function bootstrap() {
 
   // Enable CORS for frontend communication
   app.enableCors({
-    origin: (origin, callback) => {
-      const allowedOrigins = ['https://preqursor.com', 'https://www.preqursor.com'];
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: true, // ✅ Allow all origins temporarily for debugging
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
