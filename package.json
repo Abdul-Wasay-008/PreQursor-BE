@@ -43,6 +43,7 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.0",
+    "resend": "^4.1.2",
     "rxjs": "^7.8.1",
     "strong-soap": "^4.1.8"
   },
