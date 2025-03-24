@@ -8,7 +8,7 @@ export class MailService {
 
     try {
       await resend.emails.send({
-        from: 'PreQursor <onboarding@resend.dev>',
+        from: 'PreQursor <alerts@notify.preqursor.com>',
         to: process.env.GMAIL_USER,
         replyTo: formData.email,
         subject: `Message from ${formData.name}`,
@@ -82,7 +82,7 @@ export class MailService {
 
     try {
       await resend.emails.send({
-        from: 'PreQursor <onboarding@resend.dev>',
+        from: 'PreQursor <alerts@notify.preqursor.com>',
         to,
         subject: emailSubject,
         html: emailText,
@@ -96,7 +96,7 @@ export class MailService {
 
   async sendDepositConfirmationEmail(userEmail: string, userName: string) {
     const resend = new Resend(process.env.RESEND_API_KEY);
-    
+
     const emailSubject = `Deposit Request Received - PreQursor`;
 
     const emailText = `
@@ -131,7 +131,7 @@ export class MailService {
 
     try {
       await resend.emails.send({
-        from: 'PreQursor <onboarding@resend.dev>',
+        from: 'PreQursor <alerts@notify.preqursor.com>',
         to: userEmail,
         subject: emailSubject,
         html: emailText,

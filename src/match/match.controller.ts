@@ -41,6 +41,3 @@ export class MatchController {
         return this.matchService.bookMatch(matchId, userId);
     }
 }
-
-
-
