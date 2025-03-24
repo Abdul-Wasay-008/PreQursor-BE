@@ -21,7 +21,7 @@ async function bootstrap() {
 
   // Enable CORS for frontend communication
   app.enableCors({
-    origin: true, // ✅ Allow all origins temporarily for debugging
+    origin: '*', // ✅ Allow all origins temporarily for debugging
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
