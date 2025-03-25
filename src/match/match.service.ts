@@ -174,7 +174,9 @@ export class MatchService {
         };
 
         // Send match confirmation email to the relevant recipients
-        await this.mailService.sendMatchConfirmationEmail(emailRecipients, matchDetails);
+        this.mailService.sendMatchConfirmationEmail(emailRecipients, matchDetails)
+            .then(() => console.log("✅ Match confirmation email sent"))
+            .catch(err => console.error("❌ Error sending match confirmation email:", err));
 
         return result; // Always return { message: string }
     }
