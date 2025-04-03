@@ -52,7 +52,7 @@ export class MailService {
         </head>
         <body>
           <div class="container">
-            <img src="https://i.postimg.cc/NfYvcYXK/pq-logo.jpg" class="logo" alt="PreQursor Logo">
+            <img src="https://i.postimg.cc/jdrwmqbj/Pre-Qursor-Logo.png" class="logo" alt="PreQursor Logo">
             <h3>Match Confirmation</h3>
             <div class="email-content">
               <p>Congratulations! You've successfully booked a match!</p>
@@ -114,7 +114,7 @@ export class MailService {
     </head>
     <body>
       <div class="container justify">
-        <img src="https://i.postimg.cc/NfYvcYXK/pq-logo.jpg" class="logo" alt="PreQursor Logo">
+        <img src="https://i.postimg.cc/jdrwmqbj/Pre-Qursor-Logo.png" class="logo" alt="PreQursor Logo">
         <h3>Deposit Confirmation</h3>
         <div class="email-content justify">
           <p>Dear ${userName},</p>
