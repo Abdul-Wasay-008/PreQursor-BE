@@ -77,7 +77,7 @@ export class Match extends Document {
   @Prop({ required: true })
   roomPassword: string;
   
-  @Prop({ required: true, default: 'Asia' }) // Default server is 'Asia'
+  @Prop({ required: true, default: 'Middle East' }) // Default server is 'Middle East'
   server: string;
 }
 

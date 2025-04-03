@@ -33,7 +33,7 @@ export class MatchService {
         // Create the match without saving it yet
         const newMatch = new this.matchModel({
             ...matchDetails,
-            server: 'Asia', // Set the server field to 'Asia'
+            server: 'Middle East', // Set the server field to 'Middle East'
         });
 
         // Generate the room password
