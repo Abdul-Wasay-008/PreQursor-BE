@@ -30,9 +30,9 @@ export class WalletService {
     const user = await this.userModel.findById(userId);
     if (!user) throw new NotFoundException("User not found");
 
-    if (amount === 0) {
-      throw new BadRequestException("Amount must be greater than zero");
-    }
+    // if (amount === 0) {
+    //   throw new BadRequestException("Amount must be greater than zero");
+    // }
 
     if (amount < 0 && user.walletBalance < Math.abs(amount)) {
       throw new BadRequestException("Insufficient funds");
