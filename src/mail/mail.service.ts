@@ -72,9 +72,14 @@ export class MailService {
               <p>Thank you for choosing PreQursor. We are thrilled to have you as part of our vibrant gaming community!</p>
               <p class="highlight">Make sure to save this email for future reference.</p>
             </div>
-            <div class="footer">
-              <p>Best regards,<br>The PreQursor Team</p>
-            </div>
+              <div class="email-content">
+                <p class="highlight">
+                  📣 Join our <a href="https://chat.whatsapp.com/CeYyuU8ajBNCBw2nz5UW05" target="_blank" style="color: #1d4ed8; text-decoration: underline;">official PreQursor WhatsApp group</a> to get exclusive match updates, announcements, rewards, and more!
+                </p>
+              </div>
+              <div class="footer">
+                <p>Best regards,<br>The PreQursor Team</p>
+              </div>
           </div>
         </body>
       </html>
