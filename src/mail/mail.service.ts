@@ -52,7 +52,7 @@ export class MailService {
         </head>
         <body>
           <div class="container">
-            <img src="https://i.postimg.cc/jdrwmqbj/Pre-Qursor-Logo.png" class="logo" alt="PreQursor Logo">
+            <img src="https://res.cloudinary.com/dw9ehsmfa/image/upload/v1745601274/PreQursor_-_Logo_hojvg0.png" class="logo" alt="PreQursor Logo">
             <h3>Match Confirmation</h3>
             <div class="email-content">
               <p>Congratulations! You've successfully booked a match!</p>
@@ -119,7 +119,7 @@ export class MailService {
     </head>
     <body>
       <div class="container justify">
-        <img src="https://i.postimg.cc/jdrwmqbj/Pre-Qursor-Logo.png" class="logo" alt="PreQursor Logo">
+        <img src="https://res.cloudinary.com/dw9ehsmfa/image/upload/v1745601274/PreQursor_-_Logo_hojvg0.png" class="logo" alt="PreQursor Logo">
         <h3>Deposit Confirmation</h3>
         <div class="email-content justify">
           <p>Dear ${userName},</p>
@@ -147,4 +147,54 @@ export class MailService {
       throw new Error('Failed to send deposit confirmation email');
     }
   }
+
+  //Password Reset Link
+  async sendResetEmail(email: string, resetLink: string) {
+    const resend = new Resend(process.env.RESEND_API_KEY);
+  
+    const emailSubject = `Reset Your PreQursor Password`;
+  
+    const emailHtml = `
+    <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; color: #333; background-color: #f3f4f6; }
+          .container { max-width: 600px; margin: auto; padding: 20px; background: white; border-radius: 12px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+          h3 { color: #ff4500; font-size: 1.8em; margin-bottom: 20px; }
+          p { font-size: 1.1em; margin-bottom: 20px; }
+          a.button { display: inline-block; padding: 12px 24px; font-size: 1.1em; color: white; background-color: #ff4500; text-decoration: none; border-radius: 8px; transition: background-color 0.3s ease; }
+          a.button:hover { background-color: #e63e00; }
+          .footer { margin-top: 30px; color: #6b7280; font-size: 0.95em; }
+          .logo { width: 100px; margin: 25px auto 15px; display: block; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <img src="https://res.cloudinary.com/dw9ehsmfa/image/upload/v1745601274/PreQursor_-_Logo_hojvg0.png" class="logo" alt="PreQursor Logo" />
+          <h3>Password Reset Request</h3>
+          <p>We received a request to reset your PreQursor account password. If you didn't make this request, you can safely ignore this email.</p>
+          <a href="${resetLink}" class="button">Reset Password</a>
+          <p>This link is valid for 15 minutes only.</p>
+          <div class="footer">
+            <p>Stay sharp, gamer. <br />The PreQursor Team</p>
+          </div>
+        </div>
+      </body>
+    </html>
+    `;
+  
+    try {
+      await resend.emails.send({
+        from: 'PreQursor <alerts@notify.preqursor.com>',
+        to: email,
+        subject: emailSubject,
+        html: emailHtml,
+      });
+  
+      console.log(`📩 Password reset email sent to: ${email}`);
+    } catch (error) {
+      console.error('❌ Error sending password reset email:', error);
+      throw new Error('Failed to send password reset email');
+    }
+  }  
 }

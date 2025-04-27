@@ -6,12 +6,15 @@ import { LoginUserDto } from './dtos/login-user.dto';
 import { User } from './schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import * as jwt from 'jsonwebtoken';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) { }
 
   async signup(createUserDto: CreateUserDto) {
@@ -60,6 +63,7 @@ export class AuthService {
     return { user: savedUser, token }; // Return user and token
   }
 
+  //Login
   async login(loginUserDto: LoginUserDto) {
     const { email, password: userPassword } = loginUserDto;
 
@@ -88,4 +92,50 @@ export class AuthService {
     return { message: 'Login successful', user: userWithoutPassword, token }; // Return user without password and token
   }
 
+  // Reset password link with token generation
+  async sendPasswordResetLink(email: string) {
+    const user = await this.userModel.findOne({ email });
+
+    // ❌ Don't reveal whether email exists
+    if (!user) {
+      return {
+        message: 'If an account exists with this email, a reset link has been sent.',
+      };
+    }
+
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '15m' } // Expires in 15 mins
+    );
+
+    const resetLink = `https://www.preqursor.com/reset-password?token=${token}`;
+
+    await this.mailService.sendResetEmail(email, resetLink);
+
+    return {
+      message: 'If an account exists with this email, a reset link has been sent.',
+    };
+  }
+
+  //Reset password logic
+  async resetPassword(token: string, newPassword: string) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET) as { userId: string };
+
+      const user = await this.userModel.findById(decoded.userId);
+      if (!user) {
+        throw new HttpException('Invalid or expired token', HttpStatus.BAD_REQUEST);
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+
+      await user.save();
+
+      return { message: 'Password reset successful! Redirecting to login page...' };
+    } catch (err) {
+      throw new HttpException('Invalid or expired token', HttpStatus.BAD_REQUEST);
+    }
+  }
 }
