@@ -68,17 +68,26 @@ export class Match extends Document {
   prizePool: PrizeDetail[]; // Array for prize distribution (Key, Value pairs)
 
   @Prop({ type: [ParticipantSchema], default: [] })
-  participants: Participant[]; // List of participants (either solo players or teams)
-
-  // Fields for room details
-  @Prop({ required: true })
-  roomName: string; 
+  participants: Participant[]; // List of participants (either solo players or teams
 
   @Prop({ required: true })
   roomPassword: string;
-  
+
   @Prop({ required: true, default: 'Middle East' }) // Default server is 'Middle East'
   server: string;
+
+  @Prop({ required: false })
+  roomId?: string;
+
+  @Prop({ required: false })
+  roomName?: string;
+
+  @Prop({
+    type: String,
+    enum: ['waiting', 'published', 'completed'],
+    default: 'waiting',
+  })
+  status: 'waiting' | 'published' | 'completed';
 }
 
 export const MatchSchema = SchemaFactory.createForClass(Match);

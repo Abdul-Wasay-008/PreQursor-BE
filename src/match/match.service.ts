@@ -39,9 +39,6 @@ export class MatchService {
         // Generate the room password
         const roomPassword = this.generatePassword();
 
-        // Assign the roomName using the generated MongoDB ObjectId
-        newMatch.roomName = newMatch._id.toString(); // MongoDB ObjectId as room name
-
         // Assign the roomPassword
         newMatch.roomPassword = roomPassword;
 
@@ -49,9 +46,27 @@ export class MatchService {
         return await newMatch.save();
     }
 
-    // Get all matches
+    //Fetch all matches that are less then 1 hour of the match date
     async findAllMatches(): Promise<Match[]> {
-        return this.matchModel.find().exec();
+        const matches = await this.matchModel.find().exec();
+        const now = Date.now();
+
+        // Update expired matches to 'completed'
+        for (const match of matches) {
+            const matchDateTimeStr = `${match.date} ${match.time}`;
+            const matchStart = new Date(matchDateTimeStr).getTime();
+            const matchEnd = matchStart + 60 * 60 * 1000; // 1 hour duration
+
+            if (now > matchEnd && match.status !== 'completed') {
+                match.status = 'completed';
+                await match.save();
+            }
+        }
+
+        // Now return only matches that are not completed
+        return this.matchModel.find({
+            status: { $in: ['waiting', 'published'] },
+        }).exec();
     }
 
     //Function to populate match modal with necessary match details 
@@ -173,12 +188,12 @@ export class MatchService {
             server: match.server,
         };
 
-        // Send match confirmation email to the relevant recipients
-        this.mailService.sendMatchConfirmationEmail(emailRecipients, matchDetails)
+        // Send match confirmation GENERIC email to the relevant recipients
+        this.mailService.sendMatchConfirmationGenericEmail(emailRecipients, matchDetails)
             .then(() => console.log("✅ Match confirmation email sent"))
             .catch(err => console.error("❌ Error sending match confirmation email:", err));
 
-        return result; // Always return { message: string }
+        return result;
     }
 
     // Helper function to get user emails based on userIds
