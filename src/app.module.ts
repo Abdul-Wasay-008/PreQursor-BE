@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';  
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 import { AdminAuthModule } from './admin/admin-auth.module';
 import { MailModule } from './mail/mail.module';
 import { IdModule } from './id/id.module';
@@ -24,6 +25,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     MatchModule,
     WalletModule,
     ScreenshotModule,
+    UserModule,
   ],
 })
 export class AppModule {}
