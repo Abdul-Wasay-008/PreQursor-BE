@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Match } from './schema/match.schema';
 import { User } from 'src/auth/schemas/user.schema';
 import { Team } from 'src/team/schema/team.schema';
@@ -364,5 +364,48 @@ export class MatchService {
         await match.save();
 
         return { message: "✅ Slot booked successfully for Squad match." };
+    }
+
+    // Method to Fetch Match History
+    async getMatchHistory(userId: string) {
+        const userObjectId = userId;
+
+        // Calculate the current date and time minus one hour
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+        const currentDate = new Date().toISOString().split("T")[0];
+
+        // ✅ Fetching All Matches of the User
+        const matches = await this.matchModel
+            .find({
+                "participants.userId": userObjectId
+            })
+            .sort({ date: -1, time: -1 })
+            .exec();
+
+        // ✅ Filtering Matches Based on Combined Date and Time
+        const filteredMatches = matches.filter((match) => {
+            // If the match date is before today, it is automatically valid
+            if (new Date(match.date) < new Date(currentDate)) {
+                return true;
+            }
+
+            // If the match is today, check if it has passed one hour ago
+            if (new Date(match.date).toISOString().split("T")[0] === currentDate) {
+                const [hours, minutes, ampm] = match.time.split(/[:\s]/);
+                const adjustedHours = ampm.toLowerCase() === "pm" ? (parseInt(hours) % 12) + 12 : parseInt(hours) % 12;
+                const matchDateTime = new Date(match.date);
+                matchDateTime.setHours(adjustedHours);
+                matchDateTime.setMinutes(parseInt(minutes));
+                matchDateTime.setSeconds(0);
+                matchDateTime.setMilliseconds(0);
+
+                return matchDateTime <= oneHourAgo;
+            }
+
+            // If the match date is in the future, it should not be shown
+            return false;
+        });
+
+        return filteredMatches;
     }
 }

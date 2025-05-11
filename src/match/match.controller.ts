@@ -40,4 +40,12 @@ export class MatchController {
     ): Promise<{ message: string }> {  // Updated return type here
         return this.matchService.bookMatch(matchId, userId);
     }
+
+    //Endpoint to Fetch User Match History
+    @UseGuards(JwtGuard)
+    @Get('history')
+    async getUserMatchHistory(@Req() req) {
+        const userId = req.user._id; // Extracted from JWT
+        return this.matchService.getMatchHistory(userId);
+    }
 }
