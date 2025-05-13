@@ -2,10 +2,14 @@ import { Injectable, NotFoundException, BadRequestException } from "@nestjs/comm
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { User } from "src/auth/schemas/user.schema";
+import { ConversionsService } from "src/conversions/conversions.service";
 
 @Injectable()
 export class WalletService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly conversionsService: ConversionsService  // Injecting CAPI service
+  ) { }
 
   //Fetch the user wallet balance and display it on the fontend
   async getUserWalletBalance(userId: string): Promise<{ walletBalance: string, lastCredited: string, lastDebited: string }> {
@@ -61,6 +65,16 @@ export class WalletService {
     );
 
     console.log(`✅ Wallet Updated Successfully for User: ${userId}, New Balance: ${user.walletBalance}`);
+
+    // Fire Conversions API if deposit happened
+    if (amount > 0) {
+      await this.conversionsService.sendConversionEvent(
+        'Lead',            // Standard Meta Event
+        user.email,
+        user.phoneNumber,
+        amount                 // Actual deposit amount
+      );
+    }
 
     return {
       walletBalance: `${user.walletBalance.toLocaleString()} PKR`,

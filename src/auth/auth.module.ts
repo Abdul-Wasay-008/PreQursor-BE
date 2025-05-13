@@ -6,11 +6,13 @@ import { User, UserSchema } from './schemas/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config'; 
 import { MailModule } from 'src/mail/mail.module';
+import { ConversionsModule } from 'src/conversions/conversions.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     MailModule,
+    ConversionsModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '7d' },

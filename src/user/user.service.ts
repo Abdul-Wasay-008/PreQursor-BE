@@ -3,10 +3,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/schemas/user.schema';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
+import { ConversionsService } from 'src/conversions/conversions.service';
 
 @Injectable()
 export class UserService {
-    constructor(@InjectModel(User.name) private userModel: Model<User>) { }
+    constructor(
+        @InjectModel(User.name) private userModel: Model<User>,
+        private readonly conversionsService: ConversionsService,
+    ) { }
+
 
     // Method to get user profile
     async getProfile(userId: string): Promise<User> {
@@ -57,6 +62,18 @@ export class UserService {
         if (!updatedUser) {
             throw new NotFoundException('User not found');
         }
+
+        // ✅ Fire CAPI Contact event
+        this.conversionsService.sendConversionEvent(
+            'Contact',                          // Standard Meta event
+            updatedUser.email,
+            updatedUser.phoneNumber,
+            0                                   // No monetary value
+        ).then(() => {
+            console.log('✅ CAPI Contact event sent for profile update');
+        }).catch((err) => {
+            console.error('⚠️ CAPI Contact event failed:', err.code || err.message);
+        });
 
         return updatedUser;
     }

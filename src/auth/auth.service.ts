@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import * as jwt from 'jsonwebtoken';
 import { MailService } from '../mail/mail.service';
+import { ConversionsService } from 'src/conversions/conversions.service';
 
 @Injectable()
 export class AuthService {
@@ -15,8 +16,10 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
     private mailService: MailService,
+    private readonly conversionsService: ConversionsService,
   ) { }
 
+  //Sign Up Method
   async signup(createUserDto: CreateUserDto) {
     const { email, password, username, phoneNumber, walletType } = createUserDto;
 
@@ -53,6 +56,14 @@ export class AuthService {
     // Save the user
     const savedUser = await newUser.save();
 
+    // Send Conversions API Event (User Signup)
+    await this.conversionsService.sendConversionEvent(
+      'CompleteRegistration',       // Event Name
+      email,                // User Email
+      phoneNumber,          // User Phone Number
+      0                     // Value (0 for signup, no monetary value)
+    );
+
     // Generate JWT token including _id
     const token = this.jwtService.sign({
       _id: savedUser._id,
@@ -63,7 +74,7 @@ export class AuthService {
     return { user: savedUser, token }; // Return user and token
   }
 
-  //Login
+  //Login Method
   async login(loginUserDto: LoginUserDto) {
     const { email, password: userPassword } = loginUserDto;
 
@@ -82,6 +93,14 @@ export class AuthService {
     // Exclude the password from the returned user object
     const { password, ...userWithoutPassword } = user.toObject();
 
+    //Send Conversions API Event (User Login)
+    await this.conversionsService.sendConversionEvent(
+      'Login',         // Event Name
+      user.email,           // User Email
+      user.phoneNumber,     // User Phone Number (ensure you store it)
+      0                      // Value (0 for login, no monetary value)
+    );
+
     // Generate JWT token including _id
     const token = this.jwtService.sign({
       _id: user._id,
@@ -92,7 +111,7 @@ export class AuthService {
     return { message: 'Login successful', user: userWithoutPassword, token }; // Return user without password and token
   }
 
-  // Reset password link with token generation
+  // Reset password Method link with token generation
   async sendPasswordResetLink(email: string) {
     const user = await this.userModel.findOne({ email });
 

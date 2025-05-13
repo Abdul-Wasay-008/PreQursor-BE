@@ -7,6 +7,7 @@ import { Team } from 'src/team/schema/team.schema';
 import { Document } from 'mongoose';
 import { MailService } from 'src/mail/mail.service';
 import { WalletService } from 'src/wallet/wallet.service';
+import { ConversionsService } from 'src/conversions/conversions.service';
 
 @Injectable()
 export class MatchService {
@@ -16,6 +17,7 @@ export class MatchService {
         @InjectModel(Team.name) private readonly teamModel: Model<Team>,
         private readonly mailService: MailService,
         private readonly walletService: WalletService,
+        private readonly conversionsService: ConversionsService,
     ) { }
 
     // Function to generate a random 6-character alphanumeric password
@@ -234,6 +236,14 @@ export class MatchService {
         match.availableSlots -= 1;
         await match.save();
 
+        //Send Conversions API Event (Match Booking - Solo)
+        await this.conversionsService.sendConversionEvent(
+            'Purchase',                // Standard Meta Event
+            user.email,                // User Email
+            user.phoneNumber,          // User Phone Number
+            entryFee                   // Value (Entry Fee)
+        );
+
         return { message: "Slot booked successfully for Solo match." };
     }
 
@@ -248,6 +258,12 @@ export class MatchService {
 
         if (!team) {
             throw new BadRequestException("You must belong to a team to join duo matches.");
+        }
+
+        // Fetch the team leader's details
+        const leader = await this.userModel.findById(team.teamLeader.userId);
+        if (!leader) {
+            throw new NotFoundException("Team leader not found.");
         }
 
         // Ensure only the team leader can book
@@ -298,6 +314,14 @@ export class MatchService {
         match.availableSlots -= 1;
         await match.save();
 
+        //Send Conversions API Event (Match Booking - Duo)
+        await this.conversionsService.sendConversionEvent(
+            'Purchase',                // Standard Meta Event
+            leader.email,              // Team Leader Email
+            leader.phoneNumber,        // Team Leader Phone Number
+            match.entryFee             // Full Entry Fee Value (combined)
+        );
+
         return { message: "✅ Slot booked successfully for Duo match." };
     }
 
@@ -313,6 +337,12 @@ export class MatchService {
 
         if (!team) {
             throw new BadRequestException("You must belong to a team to join squad matches.");
+        }
+
+        // Fetch the team leader's details
+        const leader = await this.userModel.findById(team.teamLeader.userId);
+        if (!leader) {
+            throw new NotFoundException("Team leader not found.");
         }
 
         // ✅ Ensure only the team leader can book
@@ -363,12 +393,21 @@ export class MatchService {
         match.availableSlots -= 1;
         await match.save();
 
+        // ✅ Send Conversions API Event (Match Booking - Squad)
+        await this.conversionsService.sendConversionEvent(
+            'Purchase',                // Standard Meta Event
+            leader.email,              // Team Leader Email
+            leader.phoneNumber,        // Team Leader Phone Number
+            match.entryFee             // Full Entry Fee Value (combined)
+        );
+
         return { message: "✅ Slot booked successfully for Squad match." };
     }
 
     // Method to Fetch Match History
     async getMatchHistory(userId: string) {
         const userObjectId = userId;
+        const user = await this.userModel.findById(userId).select('email phoneNumber');
 
         // Calculate the current date and time minus one hour
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
@@ -405,6 +444,22 @@ export class MatchService {
             // If the match date is in the future, it should not be shown
             return false;
         });
+
+        // Fire CAPI: ViewContent for Match History visit
+        if (filteredMatches.length > 0) {
+            this.conversionsService.sendConversionEvent(
+                'ViewContent',
+                user.email,
+                user.phoneNumber,
+                0
+            ).then(() => {
+                console.log('✅ Match History CAPI event sent');
+            }).catch(err => {
+                console.error('⚠️ Match History CAPI event failed:', err.code || err.message);
+            });
+        } else {
+            console.log('ℹ️ No match history found — skipping CAPI ViewContent event');
+        }
 
         return filteredMatches;
     }

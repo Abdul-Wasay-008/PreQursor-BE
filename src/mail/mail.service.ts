@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Resend } from 'resend';
+import { ConversionsService } from 'src/conversions/conversions.service';
 
 @Injectable()
 export class MailService {
+  constructor(private readonly conversionsService: ConversionsService) { }
+
   async sendMail(formData: { name: string; email: string; message: string }) {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -14,6 +17,15 @@ export class MailService {
         subject: `Message from ${formData.name}`,
         text: formData.message,
       });
+
+      // ✅ Fire Meta CAPI event
+      await this.conversionsService.sendConversionEvent(
+        'Contact',
+        formData.email,
+        '', // No phone number from contact form, leave blank
+        0
+      );
+      console.log('✅ CAPI event sent for Contact form');
 
       return { message: 'Message sent successfully' };
     } catch (error) {

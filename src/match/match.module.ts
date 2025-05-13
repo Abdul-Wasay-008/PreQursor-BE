@@ -7,6 +7,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { TeamsModule } from 'src/team/team.module';
 import { MailModule } from 'src/mail/mail.module';
 import { WalletModule } from 'src/wallet/wallet.module';
+import { ConversionsModule } from 'src/conversions/conversions.module';
 
 @Module({
     imports: [MongooseModule.forFeature([{ name: Match.name, schema: MatchSchema }]),
@@ -14,6 +15,7 @@ import { WalletModule } from 'src/wallet/wallet.module';
         TeamsModule,
         MailModule,
         WalletModule,
+        ConversionsModule,
     ],
     controllers: [MatchController],
     providers: [MatchService],

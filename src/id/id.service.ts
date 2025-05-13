@@ -3,10 +3,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../auth/schemas/user.schema';
 import { CreateGameIdDto } from './dtos/game-id.dto';
+import { ConversionsService } from 'src/conversions/conversions.service';
 
 @Injectable()
 export class IdService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly conversionsService: ConversionsService, // Injecting ConversionsService
+  ) { }
+
 
   // Add or update game ID for the logged-in user
   async IdTeams(userId: string, createGameIdDto: CreateGameIdDto): Promise<any> {
@@ -30,7 +35,15 @@ export class IdService {
     user.inGameIds.set(gameName, gameId); // Use Map's set method
 
     // Save the updated user document
-    await user.save(); // Ensure you await the save operation
+    await user.save();
+
+    //Send Conversions API Event (In-Game ID Submission)
+    await this.conversionsService.sendConversionEvent(
+      'SubmitApplication',        // Standard Meta Event Name
+      user.email,                 // User Email
+      user.phoneNumber,           // User Phone Number
+      0                           // Value (0 for submission)
+    );
 
     // Remove the sensitive fields before returning the response
     const { password, ...userWithoutPassword } = user.toObject(); // Convert to plain object and exclude password

@@ -11,6 +11,7 @@ import { MatchModule } from './match/match.module';
 import { WalletModule } from './wallet/wallet.module';
 import { ScreenshotModule } from './screenshot/screenshot.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ConversionsModule } from './conversions/conversions.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     WalletModule,
     ScreenshotModule,
     UserModule,
+    ConversionsModule,
   ],
 })
 export class AppModule {}

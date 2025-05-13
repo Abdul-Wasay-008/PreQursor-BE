@@ -4,11 +4,13 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { User, UserSchema } from 'src/auth/schemas/user.schema';
 import { AuthModule } from 'src/auth/auth.module';
+import { ConversionsModule } from 'src/conversions/conversions.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     AuthModule, // Importing AuthModule for JwtService access
+    ConversionsModule,  
   ],
   controllers: [UserController],
   providers: [UserService],

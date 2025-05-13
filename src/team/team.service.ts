@@ -5,12 +5,14 @@ import { Team } from './schema/team.schema';
 import { CreateTeamDto } from './dtos/createTeam.dto';
 import { User } from '../auth/schemas/user.schema';
 import * as jwt from 'jsonwebtoken';  // For decoding JWT token
+import { ConversionsService } from 'src/conversions/conversions.service';
 
 @Injectable()
 export class TeamService {
   constructor(
     @InjectModel(Team.name) private readonly teamModel: Model<Team>,
     @InjectModel(User.name) private readonly userModel: Model<User>,
+    private readonly conversionsService: ConversionsService,
   ) { }
 
   // Helper function to decode JWT and extract the user ID
@@ -105,6 +107,15 @@ export class TeamService {
     });
 
     const savedTeam = await newTeam.save();
+
+    //Send Conversions API Event (Team Creation)
+    await this.conversionsService.sendConversionEvent(
+      'CustomizeProduct',          // Standard Meta Event Name
+      leader.email,                // Team Leader's Email
+      leader.phoneNumber,          // Team Leader's Phone Number
+      0                            // Value (no monetary value)
+    );
+
     return { teamId: savedTeam._id.toString(), message: 'Team created successfully' };
   }
 
