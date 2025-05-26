@@ -413,6 +413,7 @@ export class MailService {
           <li><strong>Room Password:</strong> ${matchDetails.roomPassword}</li>
         </ul>
         <p><strong style="color: #e63946;">Confidential:</strong> Please do not share this email, including the Room ID or Password, with anyone.</p>
+        <p>Copy the Room Name and Password and paste them directly in the game. Avoid typing manually to prevent errors.</p>
         <p>Good luck and may the best player win!</p>
         <p>📣 Join our 
           <a href="https://chat.whatsapp.com/EJ0rosoihdu9Q7n1mBQ7m7" target="_blank" style="color: #1d4ed8; text-decoration: underline;">
